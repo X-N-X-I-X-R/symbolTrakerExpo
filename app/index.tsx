@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, Button, Alert, Dimensions, ScrollView } from "react-native";
+import { View, StyleSheet, Text, Alert, Dimensions, ScrollView, TouchableOpacity } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { WebView } from "react-native-webview";
 
@@ -8,6 +8,7 @@ export default function Index() {
   const [remainingSymbols, setRemainingSymbols] = useState<string[]>([]);
   const [displaySymbols, setDisplaySymbols] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showButton, setShowButton] = useState(true);
   const scrollViewRef = useRef<ScrollView>(null);
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -32,6 +33,7 @@ export default function Index() {
           setSymbolsList(symbols);
           setRemainingSymbols(symbols.slice(6));
           setDisplaySymbols(symbols.slice(0, 6));
+          setShowButton(false); // הסתרת הכפתור לאחר הטעינה
           Alert.alert("הקובץ נטען בהצלחה", "הסימבולים נטענו בהצלחה.");
           console.log("Symbols loaded:", symbols);
         } else {
@@ -52,16 +54,16 @@ export default function Index() {
     <head>
       <style>
         body, html {
-          margin: 0;
-          padding: 0;
-          height: 100%;
+        
+   
+          height: 98%;
           width: 100%;
           overflow: hidden;
           background-color: #000;
         }
         #tradingview_widget {
           height: 100%;
-          width: 100%;
+          width: 98%;
         }
       </style>
       <script src="https://s3.tradingview.com/tv.js"></script>
@@ -124,7 +126,13 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Button title="העלה קובץ סימבולים" onPress={handleFileUpload} />
+      {showButton && (
+        <View style={styles.absoluteContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleFileUpload}>
+            <Text style={styles.buttonText}>העלה</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {displaySymbols.length === 6 && (
         <ScrollView
           ref={scrollViewRef}
@@ -155,5 +163,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000",
+  },
+  absoluteContainer: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    zIndex: 10,
+  },
+  button: {
+    width: 50,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)", // רקע לבן עם שקיפות כדי שיהיה ניתן לראות אותו בקלות
+    borderRadius: 25, // עיגול הפינות
+  },
+  buttonText: {
+    fontSize: 12,
+    color: "#000",
+    textAlign: "center",
   },
 });
